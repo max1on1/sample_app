@@ -6,6 +6,10 @@ module SessionsHelper
   end
 
     # Returns the current logged-in user (if any).
+  def current_user?(user)
+    user == current_user
+  end
+
   def current_user
      if (user_id = session[:user_id])
       @current_user ||= User.find_by(id: user_id)
@@ -33,10 +37,15 @@ module SessionsHelper
     cookies.permanent[:remember_token] = user.remember_token
   end
 
-    def forget(user)
+   def forget(user)
     user.forget
     cookies.delete(:user_id)
     cookies.delete(:remember_token)
+  end
+
+  def redirect_back_or(default)
+    redirect_to(session[:return_to] || default)
+    session.delete(:return_to)
   end
 
   # Logs out the current user.
